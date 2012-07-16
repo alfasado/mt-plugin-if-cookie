@@ -1,0 +1,26 @@
+id  : IfCookie
+key : ifcookie
+name: IfCookie
+version: 0.1
+author_name: Alfasado Inc.
+author_link: http://alfasado.net/
+description: 'Conditional Tag MTIfCookie.'
+tags:
+    block:
+        ifcookie?: >
+                sub {
+                    my ( $ctx, $args, $cond ) = @_;
+                    my $app = MT->instance;
+                    if ( (ref $app) !~ /^MT::App::/ ) {
+                        return '';
+                    }
+                    my $name = $args->{ name };
+                    my $cookie = $app->cookie_val( $name );
+                    if (! $cookie ) {
+                        return '';
+                    }
+                    my $key = $args->{ key } || 'cookie_val';
+                    $args->{ name } = $key;
+                    $ctx->{ __stash }{ vars }{ $key } = $cookie;
+                    return MT::Template::Tags::Core::_hdlr_if( $ctx, $args, $cond );
+                }
